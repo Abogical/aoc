@@ -16,7 +16,7 @@ for smaller_ind = 1:(arr_size-2)
       middle_ind += 1;
     else
       print(smaller*middle*larger);
-      break
+      exit(0)
     end
   end
 end
