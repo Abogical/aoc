@@ -20,7 +20,7 @@ validators = Dict("byr" => number_range(1920, 2002),
 
 valid = 0;
 
-function password_filled()
+function passport_filled()
   if all(value != nothing && validators[key](value) for (key, value) in keyval)
     global valid += 1
   end
@@ -28,7 +28,7 @@ end
 
 for line in eachline(open("input.txt"))
   if isempty(line)
-    password_filled()
+    passport_filled()
     reset_keys()
   else
     for m in eachmatch(r"([^\s:]+):(\S+)", line)
@@ -40,6 +40,6 @@ for line in eachline(open("input.txt"))
   end
 end
 
-password_filled()
+passport_filled()
 
 println(valid)

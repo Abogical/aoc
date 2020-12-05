@@ -5,7 +5,7 @@ reset_keys();
 
 valid = 0;
 
-function password_filled()
+function passport_filled()
   if isempty(keys)
     global valid += 1
   end
@@ -13,7 +13,7 @@ end
 
 for line in eachline(open("input.txt"))
   if isempty(line)
-    password_filled()
+    passport_filled()
     reset_keys()
   else
     for m in eachmatch(r"([^\s:]+):(\S+)", line)
@@ -22,6 +22,6 @@ for line in eachline(open("input.txt"))
   end
 end
 
-password_filled()
+passport_filled()
 
 println(valid)
