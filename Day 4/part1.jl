@@ -17,10 +17,7 @@ for line in eachline(open("input.txt"))
     reset_keys()
   else
     for m in eachmatch(r"([^\s:]+):(\S+)", line)
-      key = m[1]
-      if key != "cid"
-        delete!(keys, key)
-      end
+      delete!(keys, m[1])
     end
   end
 end
