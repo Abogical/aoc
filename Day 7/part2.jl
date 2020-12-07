@@ -5,7 +5,7 @@ function count_bags(color)::Int64
   if isa(result, Array)
     result = isempty(result) ? 0 : sum(begin
       color_count = parse(Int64, color_count_str)
-      color_count + color_count*count_bags(subcolor)
+      color_count*(count_bags(subcolor) + 1)
     end for (color_count_str, subcolor) in result)
     global rules[color] = result
     return result
