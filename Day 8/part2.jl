@@ -6,7 +6,6 @@ end
 allTypes = Dict("acc" => acc, "jmp" => jmp, "nop" => nop)
 program = [Instruction(allTypes[m[1]], parse(Int32, m[2])) for m in match.(r"^(\S+) ([+-]\d+)", eachline("input.txt"))]
 
-acc_reg = 0
 ran = Set{Int32}()
 jmps = Set{Int32}()
 nops = Set{Int32}()
@@ -18,9 +17,7 @@ while line <= length(program) && !(line in ran)
     push!(jmps, line)
     global line += instruction.arg
   else
-    if instruction.instruction == acc
-      global acc_reg += instruction.arg
-    else
+    if instruction.instruction == nop
       push!(nops, line)
     end
     global line += 1
