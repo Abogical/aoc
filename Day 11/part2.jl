@@ -1,3 +1,4 @@
+using Distributed
 using Base.Iterators
 
 @enum SeatStatus empty occupied floor
@@ -9,32 +10,39 @@ stateCols = length(state[1])
 state = [row[colnum] for row in state, colnum in 1:stateCols]
 prev_state = nothing
 
+search_ranges = flatten([
+  # Straights
+  (zip(repeated(row), 1:stateCols) for row in 1:stateRows)
+  (zip(1:stateRows, repeated(col)) for col in 1:stateCols)
+  (zip(repeated(row), stateCols:-1:1) for row in 1:stateRows)
+  (zip(stateRows:-1:1, repeated(col)) for col in 1:stateCols)
+  # Diagonals
+  (zip(row:stateRows, 1:stateCols) for row in 1:stateRows)
+  (zip(1:stateRows, col:stateCols) for col in 2:stateCols)
+  (zip(row:stateRows, stateCols:-1:1) for row in 1:stateRows)
+  (zip(stateRows:-1:1, col:stateCols) for col in 2:stateCols)
+  (zip(row:-1:1, 1:stateCols) for row in 1:stateRows)
+  (zip(1:stateRows, col:-1:1) for col in 1:stateCols-1)
+  (zip(row:-1:1, stateCols:-1:1) for row in 1:stateRows)
+  (zip(stateRows:-1:1, col:-1:1) for col in 1:stateCols-1)
+])
+
 while prev_state != state
   occupied_seats = (state .== occupied)
-  occupied_count = map(product(1:stateRows, 1:stateCols)) do (row, col)
-    sum(map(flatten([
-      (CartesianIndices(range) for range in [
-        (row+1:stateRows, col)
-        (row, col+1:stateCols)
-      ]), ((CartesianIndex((row, col)) for (row, col) in range) for range in [
-        zip(row-1:-1:1, repeated(col))
-        zip(repeated(row), col-1:-1:1)
-        zip(row+1:stateRows, col+1:stateCols)
-        zip(row-1:-1:1, col+1:stateCols)
-        zip(row+1:stateRows, col-1:-1:1)
-        zip(row-1:-1:1, col-1:-1:1)
-      ])
-    ])) do range
-      for ind in range
-        status = state[ind]
-        if status == occupied
-          return true
-        elseif status == empty
-          return false
-        end
+  occupied_count = zeros(size(state))
+  for range in search_ranges
+    see_occupied = false
+    for (row, col) in range
+      if see_occupied
+        occupied_count[row, col] += 1
       end
-      false
-    end)
+      ind_status = state[row, col]
+      if ind_status == occupied
+        see_occupied = true
+      elseif ind_status == empty
+        see_occupied = false
+      end
+    end
   end
   global prev_state = copy(state)
   global state[findall((occupied_count .== 0) .& (state .== empty))] .= occupied
