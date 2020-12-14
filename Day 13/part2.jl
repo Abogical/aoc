@@ -7,10 +7,10 @@ ids = [id_str == "x" ? BigInt(1) : parse(BigInt, id_str) for id_str in split(lin
 step = time
 
 for id in rest_ids
-  for K in countfrom(time, step)
-    if (K+1) % id == 0
+  for K in countfrom(time+1, step)
+    if K % id == 0
       global step = lcm(step, id)
-      global time = K+1
+      global time = K
       break
     end
   end
